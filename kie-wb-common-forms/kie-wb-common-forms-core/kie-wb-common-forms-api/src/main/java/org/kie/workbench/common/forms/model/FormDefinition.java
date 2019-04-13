@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -31,7 +32,9 @@ public class FormDefinition {
     private String name;
     private FormModel model;
 
-    private List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
+    private List<FieldDefinition> fields = new ArrayList<>();
+    
+    private List<FieldPart> fieldsParts = new ArrayList<>();
 
     private LayoutTemplate layoutTemplate;
 
@@ -76,6 +79,23 @@ public class FormDefinition {
 
     public void setModel(FormModel model) {
         this.model = model;
+    }
+
+    public List<FieldPart> getFieldsParts() {
+        return fieldsParts;
+    }
+    
+    public List<FieldPart> getFieldParts(FieldDefinition def) {
+        return fieldsParts.stream()
+                          .filter(f -> f.getFieldId().equals(def.getId()))
+                          .collect(Collectors.toList());
+    }
+    
+    public Optional<FieldPart> getFieldPart(FieldDefinition def, String partId) {
+        return fieldsParts.stream()
+                          .filter(f -> f.getFieldId().equals(def.getId()))
+                          .filter(f -> f.getFieldPartId().equals(partId))
+                          .findFirst();
     }
 
     public FieldDefinition getFieldByBinding(final String binding) {

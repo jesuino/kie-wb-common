@@ -558,7 +558,7 @@ public class FormEditorPresenter extends KieEditor<FormModelerContent> {
     public void destroy() {
         editorFieldLayoutComponents.destroyAll();
     }
-
+    
     public interface FormEditorView extends KieEditorView {
 
         void init(FormEditorPresenter presenter);

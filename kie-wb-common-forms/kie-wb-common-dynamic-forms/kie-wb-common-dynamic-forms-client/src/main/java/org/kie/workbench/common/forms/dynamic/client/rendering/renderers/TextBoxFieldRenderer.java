@@ -16,9 +16,14 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.IsWidget;
+
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.databinding.client.api.Converter;
 import org.kie.workbench.common.forms.common.rendering.client.util.valueConverters.ValueConvertersFactory;
@@ -32,6 +37,12 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.def
 public class TextBoxFieldRenderer extends FieldRenderer<TextBoxBaseDefinition, DefaultFormGroup> implements RequiresValueConverter {
 
     private TextBox textBox = new TextBox();
+    
+    Map<String, IsWidget> partsMapping = new HashMap<String, IsWidget>() {
+        {
+            put("textField", textBox);
+        }
+    };
 
     @Override
     public String getName() {
@@ -75,5 +86,10 @@ public class TextBoxFieldRenderer extends FieldRenderer<TextBoxBaseDefinition, D
     @Override
     public Converter getConverter() {
         return ValueConvertersFactory.getConverterForType(field.getStandaloneClassName());
+    }
+    
+    @Override
+    public Map<String, IsWidget> getRendererParts() {
+        return partsMapping;
     }
 }
