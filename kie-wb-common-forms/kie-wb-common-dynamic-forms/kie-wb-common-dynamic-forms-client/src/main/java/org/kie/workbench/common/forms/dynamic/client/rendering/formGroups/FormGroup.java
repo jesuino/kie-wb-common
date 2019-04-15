@@ -16,10 +16,23 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.formGroups;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import com.google.gwt.user.client.ui.IsWidget;
 import org.kie.workbench.common.forms.processing.engine.handling.FieldContainer;
+
 
 public interface FormGroup extends FieldContainer {
 
     IsWidget getBindableWidget();
+    
+    default List<String> getStylableParts() {
+        return Collections.emptyList();
+    }
+    
+    default Optional<IsWidget> getStylablePart(String partId) {
+        return Optional.empty();
+    }
 }

@@ -185,7 +185,7 @@ public class FormEditorHelper {
 
         if (fieldToRemove != null) {
 
-            formDefinition.getFields().remove(fieldToRemove);
+            formDefinition.removeField(fieldToRemove);
 
             if (addToAvailables) {
 
@@ -203,6 +203,8 @@ public class FormEditorHelper {
 
                 availableFields.put(fieldToRemove.getId(),
                                     fieldToRemove);
+                
+                
             }
         }
     }

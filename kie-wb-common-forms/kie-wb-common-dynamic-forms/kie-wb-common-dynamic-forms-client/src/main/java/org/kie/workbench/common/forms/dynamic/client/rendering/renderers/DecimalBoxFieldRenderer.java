@@ -16,6 +16,9 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -33,6 +36,10 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.decimalBox.
 public class DecimalBoxFieldRenderer extends FieldRenderer<DecimalBoxFieldDefinition, DefaultFormGroup>
         implements RequiresValueConverter {
 
+    /**
+     * 
+     */
+    private static final String PART_DECIMAL_BOX = "Decimal Box";
     private DecimalBox decimalBox;
 
     @Inject
@@ -61,6 +68,7 @@ public class DecimalBoxFieldRenderer extends FieldRenderer<DecimalBoxFieldDefini
             formGroup.render(inputId,
                              decimalBox.asWidget(),
                              field);
+            partsMapping.put(PART_DECIMAL_BOX, decimalBox);
         }
 
         return formGroup;
@@ -79,5 +87,10 @@ public class DecimalBoxFieldRenderer extends FieldRenderer<DecimalBoxFieldDefini
     @Override
     public Converter getConverter() {
         return ValueConvertersFactory.getConverterForType(field.getStandaloneClassName());
+    }
+    
+    @Override
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(PART_DECIMAL_BOX);
     }
 }

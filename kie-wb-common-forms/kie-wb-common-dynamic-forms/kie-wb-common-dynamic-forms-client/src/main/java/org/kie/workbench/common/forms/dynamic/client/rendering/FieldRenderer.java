@@ -19,10 +19,10 @@ package org.kie.workbench.common.forms.dynamic.client.rendering;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -47,6 +47,7 @@ public abstract class FieldRenderer<F extends FieldDefinition, FORM_GROUP extend
     protected F field;
     protected FormFieldImpl formField = null;
     protected List<FieldChangeListener> fieldChangeListeners = new ArrayList<>();
+    protected Map<String, IsWidget> partsMapping = new HashMap<>();
 
     @Inject
     protected ManagedInstance<FORM_GROUP> formGroupsInstance;
@@ -59,19 +60,6 @@ public abstract class FieldRenderer<F extends FieldDefinition, FORM_GROUP extend
         this.field = field;
         this.fieldNS = renderingContext.getNamespace() + FormRenderingContext.NAMESPACE_SEPARATOR + field.getName();
         fieldChangeListeners.clear();
-        List<FieldPart> fieldsParts = renderingContext.getRootForm().getFieldsParts();
-        Set<String> fieldPartsIds = getRendererParts().keySet();
-        for (String partId : fieldPartsIds) {
-            Optional<FieldPart> fieldPartOp = fieldsParts.stream()
-                                                         .filter(p -> p.getFieldPartId().equals(partId))
-                                                         .findFirst();
-            if (!fieldPartOp.isPresent()) {
-                FieldPart part = new FieldPart(field.getId(), partId);
-                part.getProperties().put("backgroundColor", "red");
-                part.getProperties().put("fontSize", "1");
-                fieldsParts.add(part);
-            }
-        }
     }
 
     public IsWidget renderWidget() {
@@ -114,16 +102,7 @@ public abstract class FieldRenderer<F extends FieldDefinition, FORM_GROUP extend
             formField.setReadOnly(renderingContext.getRenderMode().equals(RenderMode.READ_ONLY_MODE));
 
             registerCustomFieldValidators(formField);
-            
-            getRendererParts().forEach((partId, partWidget) -> {
-                Optional<FieldPart> fieldPartOp = renderingContext.getRootForm().getFieldPart(field, partId);
-                
-                if (fieldPartOp.isPresent()) {
-                    fieldPartOp.get().getProperties()
-                                     .forEach(partWidget.asWidget().getElement().getStyle()::setProperty);
-                }
-                
-            });
+            applyStyleToRendererParts(formGroup);
 
             return ElementWrapperWidget.getWidget(formGroup.getElement());
         }
@@ -152,14 +131,56 @@ public abstract class FieldRenderer<F extends FieldDefinition, FORM_GROUP extend
     }
 
     /**
-     * Access Parts and its corresponding widgets
+     * Access Parts supported by this renderer
      * 
      * @return
      *  A HashMap with the parts ids and the corresponding widget
      */
-    public Map<String, IsWidget> getRendererParts() {
-        return Collections.emptyMap();
+    public List<String> getRendererStylableParts() {
+        return Collections.emptyList();
     }
+    
+    private void applyStyleToRendererParts(FormGroup formGroup) {
+        // get the parts coming from the form group
+        createFieldsParts(getRendererStylableParts());
+        createFieldsParts(formGroup.getStylableParts());
+        formGroup.getStylableParts().forEach(partId -> {
+            formGroup.getStylablePart(partId).ifPresent(w -> partsMapping.put(partId, w));
+        });
+        
+        renderingContext.getRootForm()
+                        .getFieldsParts()
+                        .stream()
+                        .filter(f -> f.getFieldId().equals(field.getId()))
+                        .forEach(part -> {
+                            IsWidget partWidget = partsMapping.get(part.getFieldPartId());
+                            if (partWidget != null) {
+                                part.getProperties().forEach(partWidget.asWidget().getElement().getStyle()::setProperty);
+                            }
+                        });
+    }
+    
+    /**
+     * Create Field Parts for this field given the parts IDs
+     * 
+     * @param rendererParts
+     */
+    private void createFieldsParts(List<String> rendererParts) {
+        List<FieldPart> fieldsParts = renderingContext.getRootForm().getFieldsParts();
+        String fieldId = field.getId();
+        for (String partId : rendererParts) {
+            Optional<FieldPart> fieldPartOp = fieldsParts.stream()
+                                                         .filter(p -> p.getFieldId().equals(fieldId) && 
+                                                                      p.getFieldPartId().equals(partId))
+                                                         .findFirst();
+            if (!fieldPartOp.isPresent()) {
+                FieldPart part = new FieldPart(fieldId, partId);
+                part.getProperties().put("fontSize", "20px");
+                fieldsParts.add(part);
+            }
+        }
+    }
+
     
     public abstract String getName();
 

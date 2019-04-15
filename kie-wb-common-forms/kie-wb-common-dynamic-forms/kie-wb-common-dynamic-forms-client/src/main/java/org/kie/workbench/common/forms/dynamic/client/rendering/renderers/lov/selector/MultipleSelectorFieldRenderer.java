@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers.lov.selector;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,8 @@ import org.uberfire.ext.widgets.common.client.dropdown.MultipleLiveSearchSelecti
 
 @Dependent
 public class MultipleSelectorFieldRenderer<TYPE> extends FieldRenderer<AbstractMultipleSelectorFieldDefinition, DefaultFormGroup> implements RequiresValueConverter {
+
+    private static final String PART_SELECTOR = "Selector";
 
     private MultipleSelectorInput<TYPE> selector;
 
@@ -110,6 +113,8 @@ public class MultipleSelectorFieldRenderer<TYPE> extends FieldRenderer<AbstractM
         if (renderMode.equals(RenderMode.PRETTY_MODE)) {
             selector.setEnabled(false);
         }
+        
+        partsMapping.put(PART_SELECTOR, selector);
 
         formGroup.render(selector.asWidget(),
                          field);
@@ -143,5 +148,10 @@ public class MultipleSelectorFieldRenderer<TYPE> extends FieldRenderer<AbstractM
     @Override
     public Converter getConverter() {
         return new ListToListConverter();
+    }
+    
+    @Override
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(PART_SELECTOR);
     }
 }

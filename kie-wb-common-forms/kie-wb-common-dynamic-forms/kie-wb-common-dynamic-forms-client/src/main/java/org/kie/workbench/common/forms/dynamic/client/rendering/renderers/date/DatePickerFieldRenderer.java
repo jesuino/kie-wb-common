@@ -16,6 +16,9 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers.date;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.user.client.ui.RootPanel;
@@ -31,6 +34,11 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.datePicker.
 
 @Dependent
 public class DatePickerFieldRenderer extends FieldRenderer<DatePickerFieldDefinition, DefaultFormGroup> {
+
+    /**
+     * 
+     */
+    private static final String PART_DATE_PICKER = "Date Picker";
 
     private Widget input;
 
@@ -71,6 +79,7 @@ public class DatePickerFieldRenderer extends FieldRenderer<DatePickerFieldDefini
             box.setHighlightToday(true);
             box.setShowTodayButton(true);
             handler = readOnly -> box.setEnabled(!readOnly);
+            partsMapping.put(PART_DATE_PICKER, box);
             return box;
         }
 
@@ -84,7 +93,7 @@ public class DatePickerFieldRenderer extends FieldRenderer<DatePickerFieldDefini
         box.setShowTodayButton(true);
         box.setContainer(RootPanel.get());
         handler = readOnly -> box.setEnabled(!readOnly);
-
+        partsMapping.put(PART_DATE_PICKER, box);
         return box;
     }
 
@@ -101,5 +110,10 @@ public class DatePickerFieldRenderer extends FieldRenderer<DatePickerFieldDefini
     protected interface WidgetHandler {
 
         void setReadOnly(boolean readOnly);
+    }
+    
+    @Override
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(PART_DATE_PICKER);
     }
 }

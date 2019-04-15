@@ -16,6 +16,8 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers.selectors.radioGroup;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -39,6 +41,7 @@ public abstract class RadioGroupFieldRendererBase<FIELD extends RadioGroupBaseDe
         extends SelectorFieldRenderer<FIELD, OPTION, TYPE>
         implements RequiresValueConverter {
 
+    private static final String PART_RADIO_GROUP = "Radio Group";
     private RadioGroupBase<TYPE> input;
 
     abstract protected RadioGroupBase<TYPE> getRadioGroup();
@@ -92,6 +95,7 @@ public abstract class RadioGroupFieldRendererBase<FIELD extends RadioGroupBaseDe
             refreshSelectorOptions();
             formGroup.render(input,
                              field);
+            partsMapping.put(PART_RADIO_GROUP, input);
         }
 
         return formGroup;
@@ -110,5 +114,10 @@ public abstract class RadioGroupFieldRendererBase<FIELD extends RadioGroupBaseDe
     @Override
     public Converter getConverter() {
         return ValueConvertersFactory.getConverterForType(field.getStandaloneClassName());
+    }
+    
+    @Override
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(PART_RADIO_GROUP);
     }
 }

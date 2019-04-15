@@ -16,6 +16,9 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -34,6 +37,7 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.integerBox.
 public class IntegerBoxFieldRenderer extends FieldRenderer<IntegerBoxFieldDefinition, DefaultFormGroup>
         implements RequiresValueConverter {
 
+    private static final String INTEGER_BOX = "Integer Box";
     private IntegerBox integerBox;
 
     @Inject
@@ -62,6 +66,7 @@ public class IntegerBoxFieldRenderer extends FieldRenderer<IntegerBoxFieldDefini
             integerBox.setMaxLength(field.getMaxLength());
             integerBox.setEnabled(!field.getReadOnly());
             widget = integerBox.asWidget();
+            partsMapping.put(INTEGER_BOX, integerBox);
         }
 
         DefaultFormGroup formGroup = formGroupsInstance.get();
@@ -86,5 +91,10 @@ public class IntegerBoxFieldRenderer extends FieldRenderer<IntegerBoxFieldDefini
     @Override
     public Converter getConverter() {
         return ValueConvertersFactory.getConverterForType(field.getStandaloneClassName());
+    }
+    
+    @Override
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(INTEGER_BOX);
     }
 }

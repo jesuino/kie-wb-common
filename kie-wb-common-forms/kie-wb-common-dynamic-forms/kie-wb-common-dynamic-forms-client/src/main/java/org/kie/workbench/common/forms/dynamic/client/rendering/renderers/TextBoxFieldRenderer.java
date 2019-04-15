@@ -16,13 +16,12 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.IsWidget;
 
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.databinding.client.api.Converter;
@@ -36,14 +35,10 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.def
 @Dependent
 public class TextBoxFieldRenderer extends FieldRenderer<TextBoxBaseDefinition, DefaultFormGroup> implements RequiresValueConverter {
 
+    final static String PART_TEXT_FIELD = "Text Input";
+    
     private TextBox textBox = new TextBox();
     
-    Map<String, IsWidget> partsMapping = new HashMap<String, IsWidget>() {
-        {
-            put("textField", textBox);
-        }
-    };
-
     @Override
     public String getName() {
         return "TextBox";
@@ -67,6 +62,8 @@ public class TextBoxFieldRenderer extends FieldRenderer<TextBoxBaseDefinition, D
             textBox.setMaxLength(field.getMaxLength());
             textBox.setEnabled(!field.getReadOnly());
 
+            partsMapping.put(PART_TEXT_FIELD, textBox);
+            
             formGroup.render(inputId, textBox, field);
         }
 
@@ -89,7 +86,7 @@ public class TextBoxFieldRenderer extends FieldRenderer<TextBoxBaseDefinition, D
     }
     
     @Override
-    public Map<String, IsWidget> getRendererParts() {
-        return partsMapping;
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(PART_TEXT_FIELD);
     }
 }

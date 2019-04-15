@@ -18,11 +18,13 @@ package org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.
 
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -82,5 +84,10 @@ public class DefaultFormGroupViewImpl implements IsElement,
         DOMUtil.addEnumStyleName(getElement(),
                                  ValidationState.ERROR);
         helpBlock.setTextContent(error);
+    }
+
+    @Override
+    public IsWidget getFieldLabel() {
+        return ElementWrapperWidget.getWidget(fieldLabel.getElement());
     }
 }

@@ -16,6 +16,9 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.enterprise.context.Dependent;
 
 import org.gwtbootstrap3.client.ui.SimpleCheckBox;
@@ -25,11 +28,14 @@ import org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.c
 import org.kie.workbench.common.forms.dynamic.service.shared.RenderMode;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.checkBox.definition.CheckBoxFieldDefinition;
 
+
 @Dependent
 public class CheckBoxFieldRenderer extends FieldRenderer<CheckBoxFieldDefinition, CheckBoxFormGroup> {
 
     private SimpleCheckBox checkbox;
-
+    
+    final static String PART_CHECK_BOX = "Check Box";
+    
     @Override
     public String getName() {
         return "CheckBox";
@@ -45,6 +51,8 @@ public class CheckBoxFieldRenderer extends FieldRenderer<CheckBoxFieldDefinition
 
         formGroup.render(checkbox,
                          field);
+        
+        partsMapping.put(PART_CHECK_BOX, checkbox);
 
         return formGroup;
     }
@@ -58,4 +66,10 @@ public class CheckBoxFieldRenderer extends FieldRenderer<CheckBoxFieldDefinition
     protected void setReadOnly(boolean readOnly) {
         checkbox.setEnabled(!readOnly);
     }
+    
+    @Override
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(PART_CHECK_BOX);
+    }
+    
 }

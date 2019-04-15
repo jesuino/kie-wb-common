@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.def;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.IsElement;
 import org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.FormGroupView;
@@ -27,4 +28,6 @@ public interface DefaultFormGroupView extends FormGroupView,
     void render(String inputId,
                 Widget widget,
                 FieldDefinition fieldDefinition);
+    
+    public IsWidget getFieldLabel();
 }

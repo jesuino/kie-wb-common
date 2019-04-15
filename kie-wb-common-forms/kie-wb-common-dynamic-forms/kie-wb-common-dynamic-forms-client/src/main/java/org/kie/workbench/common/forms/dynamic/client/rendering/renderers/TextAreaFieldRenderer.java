@@ -16,6 +16,9 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.user.client.ui.HTML;
@@ -31,6 +34,8 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.de
 @Dependent
 public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition, DefaultFormGroup> implements RequiresValueConverter {
 
+    public static String PART_TEXT_AREA = "Text Area";
+    
     @Override
     public String getName() {
         return "TextArea";
@@ -57,6 +62,8 @@ public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition
             textArea.setVisibleLines(field.getRows());
             textArea.setEnabled(!field.getReadOnly());
             textArea.setVisibleLines(field.getRows());
+            
+            partsMapping.put(PART_TEXT_AREA, textArea);
 
             formGroup.render(inputId, textArea, field);
         }
@@ -77,5 +84,13 @@ public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition
     @Override
     public Converter getConverter() {
         return field.getStandaloneClassName().equals(Object.class.getName()) ? new ObjectToStringConverter() : null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.kie.workbench.common.forms.dynamic.client.rendering.FieldRenderer#getRendererParts()
+     */
+    @Override
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(PART_TEXT_AREA);
     }
 }

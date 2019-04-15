@@ -113,6 +113,12 @@ public class FormDefinition {
     public FieldDefinition getFieldByBoundProperty(final ModelProperty property) {
         return getFieldByBinding(property.getName());
     }
+    
+    public void removeField(FieldDefinition fieldToRemove) {
+        String fieldId = fieldToRemove.getId();
+        getFields().remove(fieldToRemove);
+        getFieldsParts().removeIf(f ->  f.getFieldId().equals(fieldId));
+    }
 
     protected FieldDefinition getFieldBy(Predicate<FieldDefinition> predicate) {
         if (predicate != null) {

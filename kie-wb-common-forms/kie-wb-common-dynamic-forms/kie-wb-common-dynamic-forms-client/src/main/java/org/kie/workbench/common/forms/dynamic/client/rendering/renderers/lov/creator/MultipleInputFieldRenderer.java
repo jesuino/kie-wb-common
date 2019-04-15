@@ -16,6 +16,9 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.renderers.lov.creator;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -33,6 +36,10 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.lists.input
 @Dependent
 public class MultipleInputFieldRenderer extends FieldRenderer<AbstractMultipleInputFieldDefinition, DefaultFormGroup> implements RequiresValueConverter {
 
+    /**
+     * 
+     */
+    private static final String PART_MULTIPLE_INPUT = "Multiple Input";
     private MultipleInput input;
 
     @Inject
@@ -52,6 +59,8 @@ public class MultipleInputFieldRenderer extends FieldRenderer<AbstractMultipleIn
         }
 
         formGroup.render(input.asWidget(), field);
+        
+        partsMapping.put(PART_MULTIPLE_INPUT, input);
 
         return formGroup;
     }
@@ -74,5 +83,10 @@ public class MultipleInputFieldRenderer extends FieldRenderer<AbstractMultipleIn
     @Override
     public Converter getConverter() {
         return new ListToListConverter();
+    }
+    
+    @Override
+    public List<String> getRendererStylableParts() {
+        return Arrays.asList(PART_MULTIPLE_INPUT);
     }
 }

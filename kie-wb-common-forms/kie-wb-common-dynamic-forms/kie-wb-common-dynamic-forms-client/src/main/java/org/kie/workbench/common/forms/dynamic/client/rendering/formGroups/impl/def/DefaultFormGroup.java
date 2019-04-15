@@ -16,9 +16,12 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.def;
 
+import java.util.Optional;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.AbstractFormGroup;
 import org.kie.workbench.common.forms.model.FieldDefinition;
@@ -39,5 +42,13 @@ public class DefaultFormGroup extends AbstractFormGroup<DefaultFormGroupView> {
         view.render(inputId,
                     widget,
                     fieldDefinition);
+    }
+    
+    @Override
+    public Optional<IsWidget> getStylablePart(String partId) {
+        if (PART_LABEL.equals(partId)) {
+            return Optional.ofNullable(view.getFieldLabel());
+        }
+        return super.getStylablePart(partId);
     }
 }

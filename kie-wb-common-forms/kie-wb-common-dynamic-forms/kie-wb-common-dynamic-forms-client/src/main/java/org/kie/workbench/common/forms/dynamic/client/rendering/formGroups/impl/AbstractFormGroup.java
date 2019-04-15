@@ -16,13 +16,19 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.FormGroup;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 
+
 public abstract class AbstractFormGroup<VIEW extends FormGroupView> implements FormGroup {
+
+    protected static final String PART_LABEL = "Label";
 
     protected Widget bindable;
 
@@ -64,4 +70,10 @@ public abstract class AbstractFormGroup<VIEW extends FormGroupView> implements F
     public HTMLElement getElement() {
         return view.getElement();
     }
+    
+    @Override
+    public List<String> getStylableParts() {
+        return Arrays.asList(PART_LABEL);
+    }
+    
 }
