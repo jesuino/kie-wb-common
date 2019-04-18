@@ -39,6 +39,7 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.kie.workbench.common.forms.dynamic.client.rendering.FieldLayoutComponent;
 import org.kie.workbench.common.forms.editor.client.editor.changes.ChangesNotificationDisplayer;
 import org.kie.workbench.common.forms.editor.client.editor.errorMessage.ErrorMessageDisplayer;
+import org.kie.workbench.common.forms.editor.client.editor.events.FormEditorFieldSelectedEvent;
 import org.kie.workbench.common.forms.editor.client.editor.events.FormEditorSyncPaletteEvent;
 import org.kie.workbench.common.forms.editor.client.editor.groupProviders.FormEditorFieldGroupsProvider;
 import org.kie.workbench.common.forms.editor.client.editor.rendering.EditorFieldLayoutComponent;
@@ -48,6 +49,7 @@ import org.kie.workbench.common.forms.editor.model.FormModelerContent;
 import org.kie.workbench.common.forms.editor.model.FormModelerContentError;
 import org.kie.workbench.common.forms.editor.service.shared.FormEditorService;
 import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.FieldPart;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.services.refactoring.client.usages.ShowAssetUsagesDisplayer;
 import org.kie.workbench.common.services.refactoring.service.ResourceType;
@@ -64,11 +66,15 @@ import org.uberfire.ext.editor.commons.client.file.CommandWithFileNameAndCommitM
 import org.uberfire.ext.editor.commons.client.file.FileNameAndCommitMessage;
 import org.uberfire.ext.editor.commons.client.file.popups.CopyPopUpPresenter;
 import org.uberfire.ext.editor.commons.client.file.popups.RenamePopUpPresenter;
+import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.ext.layout.editor.client.api.ComponentRemovedEvent;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponent;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentPalette;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditor;
+import org.uberfire.ext.layout.editor.client.api.LayoutEditorElement;
+import org.uberfire.ext.layout.editor.client.components.columns.ComponentColumn;
+import org.uberfire.ext.layout.editor.client.event.LayoutEditorElementSelectEvent;
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
@@ -105,6 +111,8 @@ public class FormEditorPresenter extends KieEditor<FormModelerContent> {
     protected LayoutDragComponentPalette layoutDragComponentPalette;
     @Inject
     protected Event<LayoutEditorFocusEvent> layoutFocusEvent;
+    @Inject
+    protected Event<FormEditorFieldSelectedEvent> formEditorFieldSelectedEvent;
 
     private ShowAssetUsagesDisplayer showAssetUsagesDisplayer;
     private FormEditorView view;
@@ -164,7 +172,7 @@ public class FormEditorPresenter extends KieEditor<FormModelerContent> {
 
         initLayoutDragComponentPalette();
 
-        layoutFocusEvent.fire(new LayoutEditorFocusEvent());
+        layoutFocusEvent.fire(new LayoutEditorFocusEvent(ID));
     }
 
     @Override
@@ -245,6 +253,7 @@ public class FormEditorPresenter extends KieEditor<FormModelerContent> {
                           LayoutTemplate.Style.FLUID);
 
         layoutEditor.loadLayout(editorHelper.getContent().getDefinition().getLayoutTemplate());
+        layoutEditor.setElementSelectionEnabled(true);
     }
 
     protected void synchronizeLayoutEditor() {
@@ -478,7 +487,22 @@ public class FormEditorPresenter extends KieEditor<FormModelerContent> {
             }
         }
     }
-
+    
+    public void onEditorElementSelect(@Observes LayoutEditorElementSelectEvent event) {
+        LayoutEditorElement element = event.getElement();
+        if (element instanceof ComponentColumn) {
+            LayoutComponent layoutComponent = ((ComponentColumn) element).getLayoutComponent();
+            String formId = layoutComponent.getProperties().get(FieldLayoutComponent.FORM_ID);
+            FormDefinition formDefinition = editorHelper.getFormDefinition();
+            if (formDefinition.getId().equals(formId)) {
+                
+                String fieldId = layoutComponent.getProperties().get(FieldLayoutComponent.FIELD_ID);
+                List<FieldPart> parts = formDefinition.getFieldParts(fieldId);
+                formEditorFieldSelectedEvent.fire(new FormEditorFieldSelectedEvent(fieldId, parts));
+            }
+        }
+    }
+    
     protected void removeAllDraggableGroupComponent(Collection<FieldDefinition> fields) {
         String groupId = translationService.getTranslation(FormEditorConstants.FormEditorPresenterModelFields);
         Iterator<FieldDefinition> it = fields.iterator();

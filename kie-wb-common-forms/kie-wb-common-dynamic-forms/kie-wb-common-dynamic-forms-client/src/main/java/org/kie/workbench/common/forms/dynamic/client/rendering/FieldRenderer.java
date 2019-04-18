@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.IsWidget;
+
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.FormGroup;
@@ -39,6 +40,7 @@ import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FieldPart;
 import org.kie.workbench.common.forms.processing.engine.handling.FieldChangeListener;
 import org.kie.workbench.common.forms.processing.engine.handling.FormField;
+import org.uberfire.ext.layout.editor.api.css.CssValue;
 
 public abstract class FieldRenderer<F extends FieldDefinition, FORM_GROUP extends FormGroup> {
 
@@ -108,6 +110,7 @@ public abstract class FieldRenderer<F extends FieldDefinition, FORM_GROUP extend
         }
     }
 
+
     protected abstract FormGroup getFormGroup(RenderMode renderMode);
 
     protected String generateUniqueId() {
@@ -141,23 +144,28 @@ public abstract class FieldRenderer<F extends FieldDefinition, FORM_GROUP extend
     }
     
     private void applyStyleToRendererParts(FormGroup formGroup) {
+        List<FieldPart> fieldsParts = renderingContext.getRootForm().getFieldParts(field);
+        List<String> allStylableParts = new ArrayList<>();
+        allStylableParts.addAll(getRendererStylableParts());
+        allStylableParts.addAll(formGroup.getStylableParts());
+        // remove leftovers parts from other field Renderers
+        fieldsParts.removeIf(p -> !allStylableParts.contains(p.getFieldPartId()));
+        // create fields parts that may be missing
+        createFieldsParts(allStylableParts);
         // get the parts coming from the form group
-        createFieldsParts(getRendererStylableParts());
-        createFieldsParts(formGroup.getStylableParts());
         formGroup.getStylableParts().forEach(partId -> {
             formGroup.getStylablePart(partId).ifPresent(w -> partsMapping.put(partId, w));
         });
-        
-        renderingContext.getRootForm()
-                        .getFieldsParts()
-                        .stream()
-                        .filter(f -> f.getFieldId().equals(field.getId()))
-                        .forEach(part -> {
-                            IsWidget partWidget = partsMapping.get(part.getFieldPartId());
-                            if (partWidget != null) {
-                                part.getProperties().forEach(partWidget.asWidget().getElement().getStyle()::setProperty);
-                            }
-                        });
+        fieldsParts.stream()
+                   .forEach(part -> {
+                       IsWidget partWidget = partsMapping.get(part.getFieldPartId());
+                       if (partWidget != null) {
+                           part.getProperties().forEach( (k, v)  -> {
+                               CssValue value = new CssValue(k, v);
+                               partWidget.asWidget().getElement().getStyle().setProperty(value.getPropertyInCamelCase(), v);   
+                           });
+                       }
+                    });
     }
     
     /**
@@ -166,20 +174,15 @@ public abstract class FieldRenderer<F extends FieldDefinition, FORM_GROUP extend
      * @param rendererParts
      */
     private void createFieldsParts(List<String> rendererParts) {
-        List<FieldPart> fieldsParts = renderingContext.getRootForm().getFieldsParts();
         String fieldId = field.getId();
         for (String partId : rendererParts) {
-            Optional<FieldPart> fieldPartOp = fieldsParts.stream()
-                                                         .filter(p -> p.getFieldId().equals(fieldId) && 
-                                                                      p.getFieldPartId().equals(partId))
-                                                         .findFirst();
+            Optional<FieldPart> fieldPartOp = renderingContext.getRootForm().getFieldPart(field, partId);
             if (!fieldPartOp.isPresent()) {
-                FieldPart part = new FieldPart(fieldId, partId);
-                part.getProperties().put("fontSize", "20px");
-                fieldsParts.add(part);
+                renderingContext.getRootForm().getFieldsParts().add(new FieldPart(fieldId, partId));
             }
         }
     }
+    
 
     
     public abstract String getName();

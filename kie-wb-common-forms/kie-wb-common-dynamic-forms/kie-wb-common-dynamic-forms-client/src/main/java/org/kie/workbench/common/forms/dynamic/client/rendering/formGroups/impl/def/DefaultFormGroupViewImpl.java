@@ -16,11 +16,15 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.def;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Div;
@@ -34,6 +38,10 @@ import org.kie.workbench.common.forms.model.FieldDefinition;
 @Templated
 public class DefaultFormGroupViewImpl implements IsElement,
                                                  DefaultFormGroupView {
+    
+    
+    final static String PART_FIELD_LABEL = "Field Label";
+    final static String PART_FIELD_CONTAINER = "Field Container";
 
     @Inject
     @DataField
@@ -87,7 +95,18 @@ public class DefaultFormGroupViewImpl implements IsElement,
     }
 
     @Override
-    public IsWidget getFieldLabel() {
-        return ElementWrapperWidget.getWidget(fieldLabel.getElement());
+    public IsWidget getPart(String partId) {
+        switch (partId) {
+        case PART_FIELD_CONTAINER:
+            return fieldContainer.asWidget();
+        case PART_FIELD_LABEL:
+            return ElementWrapperWidget.getWidget(fieldLabel.getElement());
+        }
+        return null;
+    }
+    
+    @Override
+    public List<String> getViewStylableParts() {
+        return Arrays.asList(PART_FIELD_LABEL, PART_FIELD_CONTAINER);
     }
 }

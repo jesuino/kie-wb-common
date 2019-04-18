@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.def;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.context.Dependent;
@@ -28,7 +29,7 @@ import org.kie.workbench.common.forms.model.FieldDefinition;
 
 @Dependent
 public class DefaultFormGroup extends AbstractFormGroup<DefaultFormGroupView> {
-
+    
     @Inject
     public DefaultFormGroup(DefaultFormGroupView view) {
         super(view);
@@ -46,9 +47,11 @@ public class DefaultFormGroup extends AbstractFormGroup<DefaultFormGroupView> {
     
     @Override
     public Optional<IsWidget> getStylablePart(String partId) {
-        if (PART_LABEL.equals(partId)) {
-            return Optional.ofNullable(view.getFieldLabel());
-        }
-        return super.getStylablePart(partId);
+        return Optional.ofNullable(view.getPart(partId));
+    }
+    
+    @Override
+    public List<String> getStylableParts() {
+        return view.getViewStylableParts();
     }
 }

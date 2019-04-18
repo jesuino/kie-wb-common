@@ -26,6 +26,8 @@ import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.kie.workbench.common.forms.editor.client.editor.FormEditorPresenter;
+import org.kie.workbench.common.forms.editor.client.editor.FormFieldPropertiesEditorScreen;
 import org.kie.workbench.common.screens.library.api.preferences.LibraryInternalPreferences;
 import org.kie.workbench.common.widgets.client.docks.EditorDock;
 import org.kie.workbench.common.widgets.client.docks.WorkbenchDocksHandler;
@@ -38,6 +40,7 @@ import org.uberfire.client.workbench.docks.UberfireDocks;
 import org.uberfire.client.workbench.docks.UberfireDocksInteractionEvent;
 import org.uberfire.client.workbench.events.PlaceHiddenEvent;
 import org.uberfire.ext.layout.editor.client.LayoutComponentPaletteScreen;
+import org.uberfire.ext.layout.editor.client.LayoutEditorPropertiesScreen;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
@@ -54,6 +57,8 @@ public class AuthoringWorkbenchDocks
     protected UberfireDock projectExplorerDock;
 
     protected UberfireDock componentPaletteDock;
+    
+    protected UberfireDock formFieldPartPropertiesEditorDock;
 
     protected LibraryInternalPreferences libraryInternalPreferences;
 
@@ -111,6 +116,12 @@ public class AuthoringWorkbenchDocks
                                                 IconType.CUBES.toString(),
                                                 new DefaultPlaceRequest(LayoutComponentPaletteScreen.SCREEN_ID),
                                                 authoringPerspectiveIdentifier).withSize(400).withLabel(constants.LayoutEditorComponentPalette());
+        
+        
+        formFieldPartPropertiesEditorDock = new UberfireDock(UberfireDockPosition.EAST,
+                                                             IconType.PENCIL.toString(),
+                                                             new DefaultPlaceRequest(FormFieldPropertiesEditorScreen.SCREEN_ID), 
+                                                             authoringPerspectiveIdentifier).withSize(300).withLabel("Form Field Editor");
 
         uberfireDocks.add(projectExplorerDock);
         uberfireDocks.hide(UberfireDockPosition.EAST,
@@ -240,15 +251,36 @@ public class AuthoringWorkbenchDocks
             uberfireDocks.open(dockToOpen);
         }
     }
+    
+    private void refreshEastDocks(boolean showPropertiesDock, UberfireDock dockToOpen) {
+        if (showPropertiesDock) {
+            uberfireDocks.add(formFieldPartPropertiesEditorDock);
+            uberfireDocks.show(UberfireDockPosition.EAST, authoringPerspectiveIdentifier);
+        }
+        else {
+            uberfireDocks.remove(formFieldPartPropertiesEditorDock);
+            uberfireDocks.hide(UberfireDockPosition.EAST, authoringPerspectiveIdentifier);
+        }
+
+
+        if (dockToOpen != null) {
+            uberfireDocks.open(dockToOpen);
+        }
+    }    
 
     public void onLayoutEditorFocus(@Observes LayoutEditorFocusEvent event) {
+        String placeId = event.getEditorId();
+        if (FormEditorPresenter.ID.equals(placeId)) {
+            refreshEastDocks(true, formFieldPartPropertiesEditorDock);
+        }
         refreshWestDocks(true, componentPaletteDock);
     }
 
     public void onLayoutEditorClose(@Observes PlaceHiddenEvent event) {
         String placeId = event.getPlace().getIdentifier();
-        if ("FormEditor".equals(placeId)) {
+        if (FormEditorPresenter.ID.equals(placeId)) {
             refreshWestDocks(false, null);
+            refreshEastDocks(false, null);
         }
     }
 

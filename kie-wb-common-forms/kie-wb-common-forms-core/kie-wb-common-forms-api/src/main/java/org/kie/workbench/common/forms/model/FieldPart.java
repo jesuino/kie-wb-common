@@ -60,4 +60,50 @@ public class FieldPart {
         return properties;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((fieldId == null) ? 0 : fieldId.hashCode());
+        result = prime * result + ((fieldPartId == null) ? 0 : fieldPartId.hashCode());
+        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        FieldPart other = (FieldPart) obj;
+        if (fieldId == null) {
+            if (other.fieldId != null) {
+                return false;
+            }
+        } else if (!fieldId.equals(other.fieldId)) {
+            return false;
+        } if (fieldPartId == null) {
+            if (other.fieldPartId != null) {
+                return false;
+            }
+        } else if (!fieldPartId.equals(other.fieldPartId)) {
+            return false;
+        } if (properties == null) {
+            if (other.properties != null) {
+                return false;
+            }
+        } else if (!properties.equals(other.properties)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+
 }

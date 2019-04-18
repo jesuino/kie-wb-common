@@ -86,8 +86,12 @@ public class FormDefinition {
     }
     
     public List<FieldPart> getFieldParts(FieldDefinition def) {
+        return getFieldParts(def.getId());
+    }
+    
+    public List<FieldPart> getFieldParts(String fieldId) {
         return fieldsParts.stream()
-                          .filter(f -> f.getFieldId().equals(def.getId()))
+                          .filter(f -> f.getFieldId().equals(fieldId))
                           .collect(Collectors.toList());
     }
     
@@ -97,7 +101,7 @@ public class FormDefinition {
                           .filter(f -> f.getFieldPartId().equals(partId))
                           .findFirst();
     }
-
+    
     public FieldDefinition getFieldByBinding(final String binding) {
         return getFieldBy(field -> field.getBinding() != null && field.getBinding().equals(binding));
     }
@@ -119,7 +123,7 @@ public class FormDefinition {
         getFields().remove(fieldToRemove);
         getFieldsParts().removeIf(f ->  f.getFieldId().equals(fieldId));
     }
-
+    
     protected FieldDefinition getFieldBy(Predicate<FieldDefinition> predicate) {
         if (predicate != null) {
             Optional<FieldDefinition> result = fields.stream().filter(predicate).findFirst();

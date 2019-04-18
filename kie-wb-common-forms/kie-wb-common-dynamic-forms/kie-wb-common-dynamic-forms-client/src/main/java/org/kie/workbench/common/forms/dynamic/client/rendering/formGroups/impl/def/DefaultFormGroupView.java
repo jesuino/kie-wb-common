@@ -16,11 +16,11 @@
 
 package org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.def;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.IsElement;
 import org.kie.workbench.common.forms.dynamic.client.rendering.formGroups.impl.FormGroupView;
 import org.kie.workbench.common.forms.model.FieldDefinition;
+
 
 public interface DefaultFormGroupView extends FormGroupView,
                                               IsElement {
@@ -29,5 +29,4 @@ public interface DefaultFormGroupView extends FormGroupView,
                 Widget widget,
                 FieldDefinition fieldDefinition);
     
-    public IsWidget getFieldLabel();
 }
