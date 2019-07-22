@@ -28,4 +28,6 @@ public interface WorkbenchFeatures extends DataModelerFeatures {
     String GUIDED_DECISION_TABLE_EDIT_COLUMNS = "guideddecisiontable.edit.columns";
 
     String EDIT_PROFILE_PREFERENCES = "profilepreferences.edit";
+    
+    String ACCESS_IMPORT_EXPORT = "importexport.access";
 }

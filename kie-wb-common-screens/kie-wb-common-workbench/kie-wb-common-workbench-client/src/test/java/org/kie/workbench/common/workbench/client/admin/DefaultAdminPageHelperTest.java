@@ -65,6 +65,7 @@ public class DefaultAdminPageHelperTest {
     private static String EXPERIMENTAL_SETTINGS = "ExperimentalSettings";
     private static String MANAGE_PREFERENCES = "ManagePreferences";
     private static String SERTIVCE_TASKS_ADMIN = "ServiceTasksAdministration";
+    private static String IMPORT_EXPORT = "ImportExport";
 
     @Mock
     private AdminPage adminPage;
@@ -385,6 +386,28 @@ public class DefaultAdminPageHelperTest {
     @Test
     public void experimentalFeaturesWasNotAddedTest() {
         verifyExperimentalFeatureAdded(false, false);
+    }
+    
+    @Test
+    public void importExportAddedTest() {
+        doReturn(true).when(authorizationManager).authorize(eq(WorkbenchFeatures.ACCESS_IMPORT_EXPORT), any());
+        defaultAdminPageHelper.setup();
+        verifyImportExportAdded(true);
+    }
+    
+    @Test
+    public void importExportNotAddedTest() {
+        doReturn(false).when(authorizationManager).authorize(eq(WorkbenchFeatures.ACCESS_IMPORT_EXPORT), any());
+        defaultAdminPageHelper.setup();
+        verifyImportExportAdded(false);
+    }
+
+    private void verifyImportExportAdded(boolean shouldAppear) {
+        verify(adminPage, shouldAppear ? times(1) : never()).addTool(eq("root"),
+                eq(IMPORT_EXPORT),
+                any(),
+                eq("services"),
+                any(Command.class));
     }
 
     private void verifyExperimentalFeatureAdded(final boolean addExperimental, final boolean addFeatures) {

@@ -118,12 +118,30 @@ public class DefaultAdminPageHelper {
         addStunnerPreferences(stunnerEnabled);
         addExperimentalPreferences();
         addSSHKeys();
-        addProfilePreferences(); 
+        addProfilePreferences();
+        addImportExportTool();
     }
-    
+
+    private void addImportExportTool() {
+        final boolean canAccessImportExport = authorizationManager.authorize(WorkbenchFeatures.ACCESS_IMPORT_EXPORT,
+                                                                             sessionInfo.getIdentity());
+        if (canAccessImportExport) {
+            adminPage.addTool("root",
+                    constants.ImportExport(),
+                    new Sets.Builder().add("pficon").add("pficon-import").build(),
+                    "services",
+                    () -> {
+                        final Command accessImportExport = () -> placeManager.goTo(PerspectiveIds.IMPORT_EXPORT);
+                        accessImportExport.execute();
+                        addAdminBreadcrumbs(PerspectiveIds.SSH_KEYS_EDITOR, constants.ImportExport(), accessImportExport);
+                    });
+        }
+        
+    }
+
     private void addProfilePreferences() {
         final boolean canEditProfilePreferences = authorizationManager.authorize(WorkbenchFeatures.EDIT_PROFILE_PREFERENCES,
-                sessionInfo.getIdentity());
+                                                                                 sessionInfo.getIdentity());
         profileService.call((Boolean force) -> {
             if (canEditProfilePreferences && !force) {
                 adminPage.addPreference("root",

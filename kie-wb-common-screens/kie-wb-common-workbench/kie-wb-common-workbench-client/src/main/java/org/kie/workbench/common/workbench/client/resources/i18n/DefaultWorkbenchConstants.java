@@ -172,4 +172,10 @@ public interface DefaultWorkbenchConstants
     String EditProfilePreferencesHelp();
 
     String ServiceTasksAdministration();
+
+    String ImportExport();
+
+    String AccessImportExport();
+
+    String AccessImportExportHelp();
 }
