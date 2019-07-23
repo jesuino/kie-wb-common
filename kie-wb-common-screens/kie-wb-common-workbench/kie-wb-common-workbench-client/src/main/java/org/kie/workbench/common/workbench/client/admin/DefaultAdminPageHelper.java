@@ -133,7 +133,7 @@ public class DefaultAdminPageHelper {
                     () -> {
                         final Command accessImportExport = () -> placeManager.goTo(PerspectiveIds.IMPORT_EXPORT);
                         accessImportExport.execute();
-                        addAdminBreadcrumbs(PerspectiveIds.SSH_KEYS_EDITOR, constants.ImportExport(), accessImportExport);
+                        addAdminBreadcrumbs(PerspectiveIds.IMPORT_EXPORT, constants.ImportExport(), accessImportExport);
                     });
         }
         
