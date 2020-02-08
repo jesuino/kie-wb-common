@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import elemental2.promise.Promise;
 import org.appformer.kogito.bridge.client.resource.ResourceContentService;
+import org.appformer.kogito.bridge.client.resource.interop.ResourceContentOptions;
 import org.kie.workbench.common.stunner.bpmn.client.workitem.WorkItemDefinitionClientService;
 import org.kie.workbench.common.stunner.bpmn.workitem.WorkItemDefinition;
 import org.kie.workbench.common.stunner.bpmn.workitem.WorkItemDefinitionCacheRegistry;
@@ -158,11 +159,12 @@ public class WorkItemDefinitionStandaloneClientService implements WorkItemDefini
         log("Loading icon for URI [" + iconUri + "]");
         if (nonEmpty(iconUri)) {
             return resourceContentService
-                    .get(iconUri)
+                    .get(iconUri, ResourceContentOptions.binary())
                     .then(iconData -> {
                         log("Content for icon = [" + iconData + "]");
                         if (nonEmpty(iconData)) {
-                            wid.getIconDefinition().setIconData(iconData);
+                            String d = "data:image/png;base64, " + iconData;
+                            wid.getIconDefinition().setIconData(d);
                         }
                         return promises.resolve();
                     });
